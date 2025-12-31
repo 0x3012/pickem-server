@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body } from '@nestjs/common';
 import { FixturesService } from './fixtures.service';
 import { FixturesSyncService } from './sync/fixtures.sync.service';
 import { FixturesQueryDto } from './dto/fixtures.query.dto';
 import { FixturesSyncDto } from './dto/fixtures.sync.dto';
+import { UpdateFixtureDto } from './dto/fixtures.update.dto';
 
 @Controller('v1/fixtures')
 export class FixturesController {
@@ -21,5 +22,10 @@ export class FixturesController {
     return this.fixturesSyncService.runOnce(
       query.sports ?? ['cs2']
     );
+  }
+
+  @Post('update')
+  updateFixture(@Body() payload: UpdateFixtureDto) {
+    return this.fixturesService.updateFixture(payload);
   }
 }

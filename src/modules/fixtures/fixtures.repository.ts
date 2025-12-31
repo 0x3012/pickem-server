@@ -72,4 +72,23 @@ export class FixturesRepository {
       },
     });
   }
+
+  async findByExternalId(externalId: bigint) {
+    return this.prisma.fixture.findUnique({
+      where: { id: externalId },
+    });
+  }
+
+  async updateByExternalId(
+    externalId: bigint,
+    data: Partial<Omit<UpsertFixture, 'id'>>,
+  ) {
+    return this.prisma.fixture.update({
+      where: { id: externalId },
+      data: {
+        ...data,
+        manual_updated_at: new Date(),
+      },
+    });
+  }
 }
