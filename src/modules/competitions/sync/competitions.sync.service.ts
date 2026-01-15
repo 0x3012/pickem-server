@@ -40,7 +40,7 @@ export class CompetitionsSyncService {
       const response = await axios.get(env.upstreamCompetitionsUrl, {
         headers: { 'x-api-key': env.upstreamApiKey },
         params: {
-          sport, // ✅ CORRECT PARAM
+          sport, 
             start_date: 20250100,
             limit: 50000000,
 

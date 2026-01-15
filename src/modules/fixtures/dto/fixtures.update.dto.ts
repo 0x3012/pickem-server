@@ -1,18 +1,15 @@
 import { IsDefined, IsOptional, IsNumber, IsString, IsInt } from 'class-validator';
 
 export class UpdateFixtureDto {
-  // Identificador del fixture (required)
-  @IsDefined()
+   @IsDefined()
   @IsNumber()
   external_id: number;
 
-  // Status del fixture (fixture_started, fixture_ended, etc)
-  @IsOptional()
+   @IsOptional()
   @IsString()
   status?: string;
 
-  // Datos de equipo 1
-  @IsOptional()
+   @IsOptional()
   @IsInt()
   participants0_id?: number | null;
 
@@ -20,8 +17,7 @@ export class UpdateFixtureDto {
   @IsInt()
   participants0_score?: number | null;
 
-  // Datos de equipo 2
-  @IsOptional()
+   @IsOptional()
   @IsInt()
   participants1_id?: number | null;
 
@@ -29,8 +25,7 @@ export class UpdateFixtureDto {
   @IsInt()
   participants1_score?: number | null;
 
-  // Campos opcionales adicionales
-  @IsOptional()
+   @IsOptional()
   @IsString()
   hs_description?: string | null;
 

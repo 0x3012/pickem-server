@@ -37,8 +37,7 @@ export async function fetchAndCacheTeamLogo(
     }
   }
 
-  // ⬇️ Download logo
-  const response = await axios.get(
+   const response = await axios.get(
     `${IMAGE_API}/${participantId.toString()}`,
     {
       responseType: 'arraybuffer',

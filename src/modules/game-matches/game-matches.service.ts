@@ -40,8 +40,7 @@ export class GameMatchesService {
       Number(startMs) - lockOffset * 1000
     ).toISOString();
 
-    // 🔽 FETCH TEAMS
-    const [teamA, teamB] = await Promise.all([
+     const [teamA, teamB] = await Promise.all([
       this.repo.getTeamByExternalId(
         fixture.participants0_id
       ),

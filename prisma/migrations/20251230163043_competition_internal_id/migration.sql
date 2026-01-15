@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `competition` MODIFY `id` BIGINT NOT NULL AUTO_INCREMENT;

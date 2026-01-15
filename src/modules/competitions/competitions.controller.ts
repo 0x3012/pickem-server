@@ -27,8 +27,7 @@ export class CompetitionsController {
     return this.service.getById(Number(id));
   }
 
-  // 🔥 THIS is the route you are missing at runtime
-  @Post('sync')
+   @Post('sync')
   async syncCompetitions() {
     return this.sync.runOnce(['cs2']);
   }

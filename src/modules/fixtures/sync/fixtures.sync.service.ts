@@ -29,10 +29,11 @@ export class FixturesSyncService {
     for (const sport of validSports) {
       this.logger.log(`▶️ Syncing fixtures for ${sport}`);
 
+      const today = new Date().toISOString().split('T')[0];
+
       const response = await axios.get(env.upstreamFixturesUrl, {
         headers: { 'x-api-key': env.upstreamApiKey },
-        params: { sport,  start_date: 20250100,         limit: 50000000,
- },
+        params: { sport, from: '2026-01-01', to: today, limit: -1 },
         timeout: 120_000,
       });
 

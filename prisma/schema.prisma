@@ -6,73 +6,240 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+
+enum PickChoice {
+  A
+  B
+  DRAW
+}
+
 model Competition {
-  id                BigInt   @id @default(autoincrement()) 
-  external_id       BigInt   @unique                     
-  sport_alias       String
-  name              String
-  status            String
+  id          BigInt @id @default(autoincrement())
+  external_id BigInt @unique
+  sport_alias String
+  name        String
+  status      String
 
-  start_date        BigInt?
-  end_date          BigInt?
+  start_date BigInt?
+  end_date   BigInt?
 
-  prize_pool_usd    BigInt?
-  location          String?
-  organizer         String?
-  type              String?
+  prize_pool_usd BigInt?
+  location       String?
+  organizer      String?
+  type           String?
 
-  tier              String?
-  series            String?
-  year              String?
+  tier   String?
+  series String?
+  year   String?
 
-  image_url         String?
+  image_url String?
 
-  updated_at        DateTime?
-  ingested_at       DateTime @default(now())
+  updated_at  DateTime?
+  ingested_at DateTime  @default(now())
 
   @@index([sport_alias, status])
   @@index([updated_at])
 }
 
 model Fixture {
-  id                      BigInt   @id
+  id BigInt @id
 
-  competition_id          BigInt
-  competition_name        String?
+  competition_id   BigInt
+  competition_name String?
 
-  sport_alias             String
-  sport_name              String?
+  sport_alias String
+  sport_name  String?
 
-  status                  String?
+  status String?
 
   // timestamps (ms)
-  scheduled_start_time    BigInt?
-  start_time              BigInt?
-  end_time                BigInt?
+  scheduled_start_time BigInt?
+  start_time           BigInt?
+  end_time             BigInt?
 
   // result info
-  tie                     Int?
-  winner_id               BigInt?
+  tie       Int?
+  winner_id BigInt?
 
   // participants
-  participants0_id        BigInt?
-  participants0_name      String?
-  participants0_score     Int?
+  participants0_id    BigInt?
+  participants0_name  String?
+  participants0_score Int?
 
-  participants1_id        BigInt?
-  participants1_name      String?
-  participants1_score     Int?
+  participants1_id    BigInt?
+  participants1_name  String?
+  participants1_score Int?
 
   // misc
-  hs_description           String?
-  rr_description           String?
+  hs_description String?
+  rr_description String?
 
-  manual_override          Int?
-  manual_updated_at        DateTime?
+  manual_override   Int?
+  manual_updated_at DateTime?
 
-  ingested_at              DateTime @default(now())
+  ingested_at DateTime @default(now())
 
   @@index([sport_alias])
   @@index([competition_id])
   @@index([start_time])
+}
+
+model Team {
+  id          BigInt @id @default(autoincrement())
+  external_id BigInt @unique
+
+  sport String
+  name  String
+
+  country    String?
+  countryISO String?
+  region     String?
+
+  image_url String?
+
+  hs_description String?
+  rr_description String?
+
+  manual_override   Int?
+  manual_updated_at DateTime?
+
+  updated_at  DateTime?
+  ingested_at DateTime  @default(now())
+
+  @@index([sport])
+}
+
+model GameConfig {
+  id BigInt @id @default(autoincrement())
+
+  tenant_id   BigInt
+  sport_alias String @unique // "cs2", "lol"
+
+  lock_offset_sec Int // seconds before start
+  base_points     Int
+  multiplier      Decimal @db.Decimal(5, 2)
+  max_multiplier  Decimal @db.Decimal(5, 2)
+  allow_draw      Boolean @default(false)
+
+  updated_at DateTime?
+  created_at DateTime  @default(now())
+
+  @@index([sport_alias])
+  @@index([tenant_id])
+}
+
+model FixtureConfigOverride {
+  id BigInt @id @default(autoincrement())
+
+  tenant_id  BigInt
+  fixture_id BigInt @unique
+
+  lock_offset_sec Int?
+  base_points     Int?
+  multiplier      Decimal? @db.Decimal(5, 2)
+
+  updated_at DateTime?
+  created_at DateTime  @default(now())
+
+  @@index([fixture_id])
+  @@index([tenant_id])
+}
+model MatchPick {
+  id BigInt @id @default(autoincrement())
+
+  tenant_id  BigInt
+  // User snapshot
+  user_id    BigInt
+  user_email String
+
+  // Match / fixture
+  fixture_id BigInt
+
+  // Picked team (NULL = draw)
+  picked_team_id BigInt?
+
+  // Lock context
+  user_lock_time     DateTime?
+  server_received_at DateTime  @default(now())
+
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+
+  @@unique([user_id, fixture_id, tenant_id])
+  @@index([fixture_id])
+  @@index([user_id])
+  @@index([picked_team_id])
+  @@index([tenant_id])
+}
+
+model Tenant {
+  id BigInt @id @default(autoincrement())
+
+  slug String @unique   // "hotspawn", "rankrush"
+  name String
+
+  is_active Boolean @default(true)
+
+  created_at DateTime @default(now())
+  updated_at DateTime?
+   apiKey    String  @unique
+     users     User[]
+}
+
+model TenantConfig {
+  id BigInt @id @default(autoincrement())
+
+  tenant_id BigInt @unique   // one config per tenant
+
+  // Config blobs
+  features Json
+  games Json
+
+  created_at DateTime @default(now())
+  updated_at DateTime?
+}
+
+model PointsTransaction {
+  id             BigInt   @id @default(autoincrement())
+  tenant_id      BigInt
+  user_id        BigInt
+  external_tx_id String
+  type           String   // credit | debit
+  amount         Decimal?
+  bonus          Decimal?
+  coins          Int?
+  source         String   // pickem, minigame, admin
+  metadata       Json?
+  created_at     DateTime @default(now())
+
+  @@index([tenant_id, user_id])
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  TENANT_ADMIN
+  STAFF
+  VIEWER
+}
+
+model User {
+  id            BigInt         @id @default(autoincrement())
+
+  tenantId      BigInt   
+  role          UserRole @default(VIEWER)
+
+  email         String   @unique
+  name          String?
+  avatarUrl     String?
+
+  passwordHash  String
+  isActive      Boolean  @default(true)
+
+  lastLoginAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant        Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
 }

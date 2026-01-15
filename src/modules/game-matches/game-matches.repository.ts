@@ -3,7 +3,7 @@ import { PrismaService } from '../../database/prisma.service';
 
 @Injectable()
 export class GameMatchesRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   getFixture(fixtureId: bigint) {
     return this.prisma.fixture.findUnique({
@@ -22,7 +22,7 @@ export class GameMatchesRepository {
       where: { fixture_id: fixtureId },
     });
   }
-  
+
   getTeamByExternalId(externalId: bigint | null) {
   if (!externalId) return null;
 
@@ -30,5 +30,6 @@ export class GameMatchesRepository {
     where: { external_id: externalId },
   });
 }
+
 
 }

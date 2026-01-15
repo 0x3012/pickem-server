@@ -37,7 +37,7 @@ export type UpsertFixture = {
 
 @Injectable()
 export class FixturesRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   upsert(data: UpsertFixture) {
     return this.prisma.fixture.upsert({
@@ -47,7 +47,7 @@ export class FixturesRepository {
     });
   }
 
- findMany(where: Prisma.FixtureWhereInput) {
+  findMany(where: Prisma.FixtureWhereInput) {
     return this.prisma.fixture.findMany({
       where,
       orderBy: {
@@ -91,4 +91,55 @@ export class FixturesRepository {
       },
     });
   }
+
+  findPicksForFixture(fixtureId: bigint) {
+    return this.prisma.matchPick.findMany({
+      where: { fixture_id: fixtureId },
+    });
+  }
+
+  getGameConfig(tenantId: bigint, sportAlias: string) {
+    return this.prisma.gameConfig.findFirst({
+      where: {
+        tenant_id: tenantId,
+        sport_alias: sportAlias,
+      },
+    });
+  }
+
+  getFixtureOverride(fixtureId: bigint) {
+    return this.prisma.fixtureConfigOverride.findFirst({
+      where: { fixture_id: fixtureId },
+    });
+  }
+
+async getTeamsByIds(teamIds: bigint[]) {
+  return this.prisma.team.findMany({
+    where: {
+      id: { in: teamIds },
+    },
+    select: {
+      id: true,
+      name: true,
+      image_url: true,
+    },
+  });
+}
+
+async getTeamsByExternalIds(externalIds: bigint[]) {
+  if (!externalIds.length) return [];
+
+  return this.prisma.team.findMany({
+    where: {
+      external_id: { in: externalIds },
+    },
+    select: {
+      external_id: true,
+      name: true,
+      image_url: true,
+    },
+  });
+}
+
+
 }

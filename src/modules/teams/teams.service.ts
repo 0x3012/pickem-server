@@ -14,7 +14,6 @@ export class TeamsService {
         : {}),
     });
 
-    // stringify bigint ids for JSON
     return teams.map(t => ({
       ...t,
       id: t.id.toString(),

@@ -30,9 +30,9 @@ export class TeamsRepository {
   upsert(data: UpsertTeam) {
     return this.prisma.team.upsert({
       where: {
-        external_id: data.external_id, // ✅ correct unique key
+        external_id: data.external_id, 
       },
-      create: data, // ✅ id auto-generated
+      create: data,  
       update: data,
     });
   }
