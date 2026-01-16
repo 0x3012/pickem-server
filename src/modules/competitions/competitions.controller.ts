@@ -22,13 +22,18 @@ export class CompetitionsController {
     return this.service.list(q);
   }
 
+  @Post('sync')
+  async syncCompetitions() {
+    return this.sync.runOnce(['cs2']);
+  }
+
+  @Post('sync-new')
+  async syncNewCompetitions() {
+    return this.sync.syncNewOnly(['cs2']);
+  }
+
   @Get(':id')
   get(@Param('id') id: string) {
     return this.service.getById(Number(id));
-  }
-
-   @Post('sync')
-  async syncCompetitions() {
-    return this.sync.runOnce(['cs2']);
   }
 }

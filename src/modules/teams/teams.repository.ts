@@ -53,4 +53,11 @@ export class TeamsRepository {
       },
     });
   }
+
+  findByExternalIds(externalIds: bigint[]) {
+    return this.prisma.team.findMany({
+      where: { external_id: { in: externalIds } },
+      select: { external_id: true },
+    });
+  }
 }

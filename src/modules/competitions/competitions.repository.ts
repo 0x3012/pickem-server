@@ -53,4 +53,11 @@ export class CompetitionsRepository {
   findById(id: bigint) {
     return this.prisma.competition.findUnique({ where: { id } });
   }
+
+  findByExternalIds(externalIds: bigint[]) {
+    return this.prisma.competition.findMany({
+      where: { external_id: { in: externalIds } },
+      select: { external_id: true },
+    });
+  }
 }

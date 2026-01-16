@@ -141,5 +141,11 @@ async getTeamsByExternalIds(externalIds: bigint[]) {
   });
 }
 
+  findByIds(ids: bigint[]) {
+    return this.prisma.fixture.findMany({
+      where: { id: { in: ids } },
+      select: { id: true },
+    });
+  }
 
 }

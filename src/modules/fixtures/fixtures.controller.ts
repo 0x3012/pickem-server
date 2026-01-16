@@ -24,8 +24,23 @@ export class FixturesController {
     );
   }
 
+  @Post('sync-new')
+  syncNewFixtures(@Query() query: FixturesSyncDto) {
+    return this.fixturesSyncService.syncNewOnly(
+      query.sports ?? ['cs2']
+    );
+  }
+
+  @Post('update-recent')
+  updateRecentFixtures(@Query() query: FixturesSyncDto) {
+    return this.fixturesSyncService.updateRecent(
+      query.sports ?? ['cs2']
+    );
+  }
+
   @Post('update')
   updateFixture(@Body() payload: UpdateFixtureDto) {
+    console.log('[FixturesController] Received update payload:', payload);
     return this.fixturesService.updateFixture(payload);
   }
 }

@@ -20,4 +20,9 @@ export class TeamsController {
   sync(@Body() dto: TeamsSyncDto) {
     return this.syncService.runOnce(dto.sports ?? ['cs2']);
   }
+
+  @Post('sync-new')
+  syncNew(@Body() dto: TeamsSyncDto) {
+    return this.syncService.syncNewOnly(dto.sports ?? ['cs2']);
+  }
 }
